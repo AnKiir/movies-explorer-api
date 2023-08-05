@@ -5,25 +5,21 @@ const UnauthorizedError = require('../errors/unauthorizedError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const extractBearer = (header) => header.replace('Bearer ', '');
-
 module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
-
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    return next(new UnauthorizedError(errorMessages.UNAUTHORIZED));
-  }
-
-  const token = extractBearer(authorization);
+  const token = req.cookies.jwt;
   let payload;
+
+  if (!token) {
+    next(new UnauthorizedError(errorMessages.UNAUTHORIZED));
+  }
 
   try {
     payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : DEV_JWT_SECRET);
   } catch (err) {
-    return next(new UnauthorizedError(errorMessages.UNAUTHORIZED));
+    next(new UnauthorizedError(errorMessages.UNAUTHORIZED));
   }
 
   req.user = payload;
 
-  return next();
+  next();
 };
