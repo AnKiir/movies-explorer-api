@@ -1,3 +1,5 @@
+const urlPattern = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
+
 const codesError = {
   INCORRECT_DATA: 400,
   UNAUTHORIZED: 401,
@@ -12,7 +14,7 @@ const errorMessages = {
   UNAUTHORIZED: 'Необходима авторизация',
   FORBIDDEN: 'Доступ запрещен',
   NOT_FOUND_DATA: 'Данные не найдены',
-  WRONG_PATH: 'Указан неправильный путь',
+  WRONG_PATH: 'Передан некорректный путь',
   CONFLICT: 'Указанные данные уже существуют',
   DEFAULT: 'На сервере произошла ошибка',
   UNAUTHORIZED_AUTH: 'Неправильная почта или пароль',
@@ -20,6 +22,4 @@ const errorMessages = {
   INVALID_URL: 'Некорректная ссылка',
 };
 
-const urlPattern = /^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*$/;
-
-module.exports = { codesError, errorMessages, urlPattern };
+module.exports = { urlPattern, codesError, errorMessages };

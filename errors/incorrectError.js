@@ -1,4 +1,4 @@
-const { codesError } = require('../error');
+const { codesError } = require('../const');
 
 class IncorrectError extends Error {
   constructor(message) {

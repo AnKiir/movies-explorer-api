@@ -6,8 +6,6 @@ const { errorMessages } = require('../const');
 const ConflictError = require('../errors/conflictError');
 const IncorrectError = require('../errors/incorrectError');
 const NotFoundDataError = require('../errors/notFoundDataError');
-const UnauthorizedError = require('../errors/unauthorizedError');
-const { DEV_JWT_SECRET } = require('../config');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -24,15 +22,19 @@ const getUser = (req, res, next) => {
 };
 
 const postUser = (req, res, next) => {
-  const { name, email, password } = req.body;
+  const {
+    name, email, password
+  } = req.body;
 
   bcrypt
     .hash(password, 10)
-    .then((hash) => User.create({ name, email, password: hash }))
+    .then((hash) => User.create({
+      name, email, password: hash
+    }))
     .then((user) => {
       const { ...userCurr } = user.toObject();
       delete userCurr.password;
-      res.send(userCurr);
+      res.status(201).send(userCurr);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -47,14 +49,12 @@ const postUser = (req, res, next) => {
 
 const patchUser = (req, res, next) => {
   const { name, email } = req.body;
-
   User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
+    .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new IncorrectError(errorMessages.INCORRECT_DATA));
-      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next(new NotFoundDataError(errorMessages.NOT_FOUND_DATA));
       } else {
         next(err);
       }
@@ -65,23 +65,13 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : DEV_JWT_SECRET, {
-        expiresIn: '7d',
+      res.send({
+        token: jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret', {
+          expiresIn: '7d',
+        }),
       });
-      res.cookie('jwt', token, {
-        maxAge: 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: true,
-      });
-      res.send({ message: 'Успешная авторизация' });
     })
-    .catch((err) => {
-      next(new UnauthorizedError(err.message));
-    });
-};
-
-const logout = (req, res) => {
-  res.clearCookie('jwt').send({ message: 'Вы вышли из аккаунта' });
+    .catch(next);
 };
 
 module.exports = {
@@ -89,5 +79,4 @@ module.exports = {
   postUser,
   patchUser,
   login,
-  logout,
 };

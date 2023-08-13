@@ -32,9 +32,9 @@ const postMovieCelebrate = celebrate({
     description: Joi.string().required(),
     image: Joi.string().required().regex(urlPattern),
     trailerLink: Joi.string().required().regex(urlPattern),
+    thumbnail: Joi.string().required().regex(urlPattern),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
-    thumbnail: Joi.string().required().regex(urlPattern),
     movieId: Joi.number().required(),
   }),
 });

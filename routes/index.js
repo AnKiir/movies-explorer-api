@@ -1,14 +1,27 @@
 const router = require('express').Router();
-const authRouter = require('./auth');
-const authMiddleware = require('../middlewares/auth');
-const error404Router = require('./error404');
-const movieRouter = require('./movies');
 const userRouter = require('./users');
+const movieRouter = require('./movies');
+const auth = require('../middlewares/auth');
+const { postUser, login } = require('../controllers/users');
+const { signinCelebrate, signupCelebrate } = require('../middlewares/validators');
+const NotFoundDataError = require('../errors/notFoundDataError');
 
-router.use(authRouter)
-router.use(authMiddleware);
-router.use(error404Router);
-router.use(movieRouter);
-router.use(userRouter);
+router.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
+router.post('/signin', signinCelebrate, login);
+router.post('/signup', signupCelebrate, postUser);
+
+router.use(auth);
+
+router.use('/', userRouter);
+router.use('/', movieRouter);
+
+router.use('*', (req, res, next) => {
+  next(new NotFoundDataError('Передан некорректный путь'));
+});
 
 module.exports = router;

@@ -20,9 +20,9 @@ const postMovie = (req, res, next) => {
     description,
     image,
     trailerLink,
+    thumbnail,
     nameRU,
     nameEN,
-    thumbnail,
     movieId,
   } = req.body;
 
@@ -34,9 +34,9 @@ const postMovie = (req, res, next) => {
     description,
     image,
     trailerLink,
+    thumbnail,
     nameRU,
     nameEN,
-    thumbnail,
     movieId,
     owner: req.user._id,
   })
@@ -52,10 +52,10 @@ const postMovie = (req, res, next) => {
 
 const deleteMovie = (req, res, next) => {
   Movie.findOne({ movieId: req.params.movieId })
+    .orFail()
     .then((movie) => {
       if (movie) {
         const owner = movie.owner.toString();
-
         if (owner !== req.user._id) {
           throw new ForbiddenError(errorMessages.FORBIDDEN);
         } else {
