@@ -9,10 +9,11 @@ const errorsMiddleware = require('./middlewares/errors');
 const corsMiddleware = require('./middlewares/cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 require('dotenv').config();
+const { MONGO_URL_DEV } = require('./const');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, NODE_ENV, MONGO_URL } = process.env;
 const app = express();
-mongoose.connect('mongodb://127.0.0.1:27017/moviedb');
+mongoose.connect(NODE_ENV === 'production' ? MONGO_URL : MONGO_URL_DEV);
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));

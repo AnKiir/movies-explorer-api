@@ -1,5 +1,7 @@
 const urlPattern = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 
+const MONGO_URL_DEV = 'mongodb://127.0.0.1:27017/moviedb';
+
 const codesError = {
   INCORRECT_DATA: 400,
   UNAUTHORIZED: 401,
@@ -22,4 +24,4 @@ const errorMessages = {
   INVALID_URL: 'Некорректная ссылка',
 };
 
-module.exports = { urlPattern, codesError, errorMessages };
+module.exports = { urlPattern, codesError, errorMessages, MONGO_URL_DEV };

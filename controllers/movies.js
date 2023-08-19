@@ -51,22 +51,21 @@ const postMovie = (req, res, next) => {
 };
 
 const deleteMovie = (req, res, next) => {
-  Movie.findOne({ movieId: req.params.movieId })
-    .orFail()
-    .then((movie) => {
-      if (movie) {
-        const owner = movie.owner.toString();
-        if (owner !== req.user._id) {
-          throw new ForbiddenError(errorMessages.FORBIDDEN);
-        } else {
-          return Movie.findOneAndRemove({ movieId: req.params.movieId });
-        }
-      } else {
-        throw new NotFoundDataError(errorMessages.NOT_FOUND_DATA);
-      }
+  Movie.findById(req.params.movieId)
+    .orFail(() => {
+      throw new NotFoundDataError(errorMessages.NOT_FOUND_DATA);
     })
     .then((movie) => {
-      res.send(movie);
+      const owner = movie.owner.toString();
+      if (req.user._id === owner) {
+        Movie.deleteOne(movie)
+          .then(() => {
+            res.send(movie);
+          })
+          .catch(next);
+      } else {
+        throw new ForbiddenError(errorMessages.FORBIDDEN);
+      }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
