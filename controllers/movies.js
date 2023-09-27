@@ -51,7 +51,7 @@ const postMovie = (req, res, next) => {
 };
 
 const deleteMovie = (req, res, next) => {
-  Movie.findById(req.params.movieId)
+  Movie.findById(req.params.movieId, req.params.owner)
     .orFail(() => {
       throw new NotFoundDataError(errorMessages.NOT_FOUND_DATA);
     })

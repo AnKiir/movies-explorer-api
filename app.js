@@ -15,9 +15,10 @@ const { PORT = 3000, NODE_ENV, MONGO_URL } = process.env;
 const app = express();
 mongoose.connect(NODE_ENV === 'production' ? MONGO_URL : MONGO_URL_DEV);
 
-app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(cors());
 
 app.use(corsMiddleware);
 app.use(requestLogger);
