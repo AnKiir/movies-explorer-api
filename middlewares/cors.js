@@ -1,5 +1,5 @@
 const allowedCors = [
-  'https://kerokir.nomoreparties.co',
+  'https://kerokir.nomoreparties.co/',
   'http://kerokir.nomoreparties.co',
   'https://apikerokir.nomoreparties.co',
   'http://apikerokir.nomoreparties.co',
